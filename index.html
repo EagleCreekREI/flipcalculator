@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e40af">
+    <title>Epic Flip Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        @media (min-width: 1024px) {
+            body {
+                padding: 40px 20px;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Desktop layout - side by side */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1400px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+
+            .header {
+                grid-column: 1 / -1;
+            }
+
+            .calculator {
+                grid-column: 1;
+            }
+
+            .results {
+                grid-column: 2;
+                position: sticky;
+                top: 20px;
+            }
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 1024px) {
+            .header {
+                border-radius: 12px;
+                margin-bottom: 0;
+            }
+        }
+
+        h1 {
+            color: #3b82f6;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .address-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .calculator {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 1024px) {
+            .calculator {
+                border-radius: 12px;
+            }
+        }
+
+        .input-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results {
+            background: #3b82f6;
+            color: white;
+            padding: 20px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        @media (min-width: 1024px) {
+            .results {
+                border-radius: 12px;
+                max-height: calc(100vh - 40px);
+                overflow-y: auto;
+            }
+
+            .results::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .results::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 4px;
+            }
+
+            .results::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 4px;
+            }
+
+            .results::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .results h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 8px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .result-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .profit {
+            background: #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .profit-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .profit-value {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .max-offers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .max-offer-card {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .max-offer-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .max-offer-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .button-group {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .export-buttons {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .save-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .save-btn:active {
+            transform: scale(0.98);
+            background: #059669;
+        }
+
+        .history-btn {
+            background: white;
+            color: #3b82f6;
+        }
+
+        .history-btn:active {
+            transform: scale(0.98);
+            background: #f3f4f6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 20px auto;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .close-btn {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .history-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .history-address {
+            font-weight: 700;
+            font-size: 16px;
+            color: #3b82f6;
+            margin-bottom: 12px;
+        }
+
+        .history-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .history-detail {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .install-prompt {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        @media (min-width: 1024px) {
+            .install-prompt {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .install-btn {
+            background: #92400e;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 400px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .confirm-box h3 {
+            color: #ef4444;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .confirm-box p {
+            color: #374151;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .confirm-yes {
+            background: #ef4444;
+            color: white;
+        }
+
+        .confirm-no {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .export-btn {
+            background: white;
+            color: #3b82f6;
+            padding: 12px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .export-btn:active {
+            transform: scale(0.98);
+            background: #f3f4f6;
+        }
+
+        #apocalypseToggle:checked + span {
+            background-color: #dc2626 !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+        }
+
+        #apocalypseToggle:checked ~ #apocalypseSlider {
+            transform: translateX(24px);
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+        }
+
+        #brrrToggle:checked + span {
+            background: linear-gradient(135deg, #7c3aed, #6366f1) !important;
+        }
+
+        #brrrToggle:checked ~ #brrrSlider {
+            transform: translateX(32px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .info-icon:hover {
+            background: #5568d3;
+        }
+
+        .rehab-guide {
+            margin-top: 20px;
+        }
+
+        .rehab-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .rehab-table th {
+            background: #3b82f6;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .rehab-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .rehab-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rehab-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .scope-btn {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .scope-btn:hover {
+            background: #5568d3;
+        }
+
+        .scope-btn:active {
+            transform: scale(0.98);
+        }
+
+        .guide-section {
+            margin-bottom: 24px;
+        }
+
+        .guide-section h3 {
+            color: #3b82f6;
+            font-size: 18px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        .quick-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .quick-select {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .quick-select-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .quick-select-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .quick-select-btn:active {
+            transform: scale(0.98);
+        }
+
+        .quick-select-btn .scope-name {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .quick-select-btn .scope-cost {
+            font-size: 18px;
+            font-weight: 800;
+            color: #10b981;
+        }
+
+        .quick-select-btn:hover .scope-cost {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="installPrompt" class="install-prompt">
+            <span>📱 Install this app on your phone!</span>
+            <button class="install-btn" onclick="installApp()">Install</button>
+        </div>
+
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 id="appTitle">🏠 Epic Flip Calculator</h1>
+                <button onclick="showSettings()" style="background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 8px;" title="Settings">
+                    ⚙️
+                </button>
+            </div>
+            <input type="text" id="propertyAddress" class="address-input" placeholder="Property Address (Optional)">
+            <input type="text" id="mlsNumber" class="address-input" placeholder="MLS # (Optional)" style="margin-top: 8px;">
+        </div>
+
+        <div class="calculator">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="purchasePrice">Purchase Price ($)</label>
+                    <input type="number" id="purchasePrice" value="20000" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group">
+                    <label for="arv">ARV - After Repair Value ($)</label>
+                    <input type="number" id="arv" value="100000" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group">
+                    <label for="sqft">Square Footage</label>
+                    <input type="number" id="sqft" value="1250" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group">
+                    <label for="rehabPerSqFt">
+                        Rehab Cost per Sq Ft ($)
+                        <span class="info-icon" onclick="showRehabGuide()">i</span>
+                    </label>
+                    <input type="number" id="rehabPerSqFt" value="45" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group">
+                    <label for="contingencyPercent">Contingency Buffer (%)</label>
+                    <input type="number" id="contingencyPercent" value="15" min="0" max="50" step="5" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''" placeholder="Buffer % (e.g., 15)">
+                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                        Safety margin added to rehab cost (typically 10-20%)
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="interestRate">Loan Interest Rate (Annual %)</label>
+                    <input type="number" id="interestRate" value="12" step="0.1" oninput="calculate(); localStorage.setItem('savedInterestRate', this.value);" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group">
+                    <label for="holdTime">Hold Time (Months)</label>
+                    <input type="number" id="holdTime" value="5" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group">
+                    <label for="closingCosts">Other Closing Costs ($)</label>
+                    <input type="number" id="closingCosts" value="100" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                </div>
+
+                <div class="input-group" style="background: linear-gradient(135deg, #1f2937 0%, #374151 100%); padding: 12px; border-radius: 8px; border: 2px solid #ef4444;">
+                    <label style="display: flex; align-items: center; justify-content: space-between; color: #fbbf24; font-size: 13px; margin: 0;">
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            ☢️ Apocalypse Mode
+                            <span style="font-size: 11px; color: #9ca3af; font-weight: normal;">(+15% rehab, 2x hold time)</span>
+                        </span>
+                        <label style="position: relative; display: inline-block; width: 48px; height: 24px; margin: 0;">
+                            <input type="checkbox" id="apocalypseToggle" onchange="calculate()" style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4b5563; transition: 0.3s; border-radius: 24px; border: 2px solid #6b7280;"></span>
+                            <span id="apocalypseSlider" style="position: absolute; content: ''; height: 16px; width: 16px; left: 2px; bottom: 2px; background: linear-gradient(135deg, #ef4444, #dc2626); transition: 0.3s; border-radius: 50%; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);"></span>
+                        </label>
+                    </label>
+                </div>
+
+                <div id="strategyToggleBox" class="input-group" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 16px; border-radius: 8px; border: 2px solid #10b981; margin-top: 8px; transition: all 0.3s;">
+                    <label style="display: flex; align-items: center; justify-content: space-between; margin: 0;">
+                        <span style="color: white; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                            <span id="strategyLabel">💰 FLIP</span>
+                            <span style="font-size: 12px; font-weight: 400; opacity: 0.8;">Strategy</span>
+                        </span>
+                        <label style="position: relative; display: inline-block; width: 60px; height: 28px; margin: 0;">
+                            <input type="checkbox" id="brrrToggle" onchange="toggleStrategy()" style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.3); transition: 0.3s; border-radius: 28px; border: 2px solid white;"></span>
+                            <span id="brrrSlider" style="position: absolute; content: ''; height: 20px; width: 20px; left: 3px; bottom: 2px; background: white; transition: 0.3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></span>
+                        </label>
+                    </label>
+                    <div style="margin-top: 8px; font-size: 11px; color: rgba(255,255,255,0.8); text-align: center;">
+                        <span id="strategyDescription">Sell for profit</span>
+                    </div>
+                </div>
+
+                <!-- BRRRR-specific inputs (hidden by default) -->
+                <div id="brrrInputs" style="display: none;">
+                    <div class="input-group">
+                        <label for="monthlyRent">Monthly Rent ($)</label>
+                        <input type="number" id="monthlyRent" value="0" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="monthlyExpenses">Monthly Operating Expenses ($)</label>
+                        <input type="number" id="monthlyExpenses" value="0" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                            Property management, maintenance, taxes, insurance, etc.
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="vacancyRate">Vacancy Rate (%)</label>
+                        <input type="number" id="vacancyRate" value="8" min="0" max="30" step="1" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="refinanceLTV">Refinance LTV (%)</label>
+                        <input type="number" id="refinanceLTV" value="75" min="50" max="90" step="5" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                            Loan-to-Value ratio (typically 75-80%)
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="refinanceRate">Refinance Interest Rate (Annual %)</label>
+                        <input type="number" id="refinanceRate" value="7" step="0.1" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="refinanceTerm">Refinance Loan Term (Years)</label>
+                        <input type="number" id="refinanceTerm" value="30" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="refinanceCosts">Refinance Closing Costs ($)</label>
+                        <input type="number" id="refinanceCosts" value="3000" oninput="calculate()" onfocus="if(this.value == '0') this.value = ''">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results">
+            <h2>📊 Analysis Results</h2>
+            
+            <div id="apocalypseWarning" style="display: none; background: linear-gradient(135deg, #dc2626, #991b1b); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; text-align: center; border: 2px solid #fbbf24; animation: pulse 2s infinite;">
+                <span style="font-size: 16px;">☢️</span>
+                <span style="font-size: 12px; font-weight: 700; margin-left: 4px;">APOCALYPSE MODE ACTIVE</span>
+                <span style="font-size: 16px; margin-left: 4px;">☢️</span>
+            </div>
+            
+            <div class="result-row" id="baseRehabRow" style="display: none;">
+                <span class="result-label">Base Rehab Cost</span>
+                <span class="result-value" id="baseRehabCost">$0</span>
+            </div>
+
+            <div class="result-row" id="contingencyRow" style="display: none;">
+                <span class="result-label">Contingency Buffer (<span id="contingencyDisplay">0</span>%)</span>
+                <span class="result-value" id="contingencyAmount">$0</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Total Rehab Cost</span>
+                <span class="result-value" id="rehabCost">$0</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Insurance (Holding Period)</span>
+                <span class="result-value" id="insurance">$0</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Property Tax (Holding Period)</span>
+                <span class="result-value" id="propertyTax">$0</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Total Interest</span>
+                <span class="result-value" id="totalInterest">$0</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Total Holding Costs</span>
+                <span class="result-value" id="holdingCosts">$0</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Total Investment</span>
+                <span class="result-value" id="totalInvestment">$0</span>
+            </div>
+
+            <div class="result-row" id="closingCostsBreakdown" style="display: none; flex-direction: column; gap: 8px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; margin: 12px 0;">
+                <div style="font-weight: 700; margin-bottom: 4px;">💼 Closing Costs Breakdown</div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span>Commission (<span id="commissionPercent">0</span>%):</span>
+                    <strong id="commissionAmount">$0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span>Title/Escrow (<span id="titlePercent">0</span>%):</span>
+                    <strong id="titleAmount">$0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span>Taxes/Prorations (<span id="taxesProPercent">0</span>%):</span>
+                    <strong id="taxesProAmount">$0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span>Credits/Warranty (<span id="creditsPercent">0</span>%):</span>
+                    <strong id="creditsAmount">$0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.3);">
+                    <span style="font-weight: 700;">Total Closing Costs:</span>
+                    <strong id="totalClosingCosts">$0</strong>
+                </div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">
+                    (<span id="totalClosingPercent">0</span>% of ARV)
+                </div>
+            </div>
+
+            <div class="result-row" id="netProceedsRow">
+                <span class="result-label">Net Proceeds (After Closing)</span>
+                <span class="result-value" id="netProceeds">$0</span>
+            </div>
+
+            <div class="profit">
+                <div class="profit-label">💰 Projected Profit</div>
+                <div class="profit-value" id="profit">$0</div>
+                <div style="margin-top: 8px; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span id="dealScoreEmoji">🔥</span>
+                    <span id="dealScoreText">Great Deal!</span>
+                </div>
+            </div>
+
+            <!-- BRRRR Results (hidden by default) -->
+            <div id="brrrResults" style="display: none;">
+                <div style="background: #7c3aed; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">💵 Monthly Cash Flow</div>
+                    <div style="font-size: 28px; font-weight: 800;" id="monthlyCashFlow">$0</div>
+                    <div style="font-size: 13px; opacity: 0.8; margin-top: 4px;">
+                        <span id="annualCashFlowInline">$0</span>/year
+                    </div>
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">Refinance Loan Amount</span>
+                    <span class="result-value" id="refinanceLoanAmount">$0</span>
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">Cash Recovered</span>
+                    <span class="result-value" id="cashRecovered">$0</span>
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">Cash Left in Deal</span>
+                    <span class="result-value" id="cashLeftIn">$0</span>
+                </div>
+
+                <div style="background: #eff6ff; padding: 12px; border-radius: 8px; margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Cash-on-Cash Return</div>
+                        <div style="font-size: 20px; font-weight: 700; color: #7c3aed;" id="cocReturn">0%</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">DSCR</div>
+                        <div style="font-size: 20px; font-weight: 700; color: #7c3aed;" id="dscr">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-offers">
+                <div class="max-offer-card" onclick="fillPurchasePrice('65')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div class="max-offer-label">65% Rule Max Offer</div>
+                    <div class="max-offer-value" id="maxOffer65">$0</div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 4px;">👆 Click to use as purchase price</div>
+                </div>
+                <div class="max-offer-card" onclick="fillPurchasePrice('70')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div class="max-offer-label">70% Rule Max Offer</div>
+                    <div class="max-offer-value" id="maxOffer70">$0</div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 4px;">👆 Click to use as purchase price</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label for="dealNotes" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+                    📝 Notes (Optional)
+                </label>
+                <textarea id="dealNotes" placeholder="Add observations, concerns, or reminders about this property..." style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; background: white; color: #1f2937; font-family: inherit; font-size: 14px; min-height: 80px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="save-btn" onclick="saveDeal()">💾 Save Deal</button>
+                <button class="history-btn" onclick="showHistory()">📋 History</button>
+            </div>
+
+            <div class="export-buttons">
+                <button class="export-btn" onclick="exportAsPDF()">📄 Export PDF</button>
+                <button class="export-btn" onclick="exportAsImage()">📸 Export Image</button>
+            </div>
+            
+            <button onclick="resetForm()" style="width: 100%; margin-top: 12px; padding: 12px; border: 2px solid white; background: transparent; color: white; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                🔄 Reset Form
+            </button>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Deal History</h2>
+                <div style="display: flex; gap: 8px;">
+                    <button class="close-btn" style="background: #f59e0b;" onclick="showConfirmClear()">Clear All</button>
+                    <button class="close-btn" onclick="closeHistory()">Close</button>
+                </div>
+            </div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <div id="rehabGuideModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Tulsa Rehab Cost Guide</h2>
+                <button class="close-btn" onclick="closeRehabGuide()">Close</button>
+            </div>
+            
+            <div class="rehab-guide">
+                <div class="guide-section">
+                    <h3>Quick Select (Recommended)</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 12px;">
+                        Tap a scope to auto-fill the cost:
+                    </p>
+                    <div class="quick-select">
+                        <div class="quick-select-btn" onclick="selectRehabCost(25)">
+                            <div class="scope-name">Basic Cosmetic</div>
+                            <div class="scope-cost">$25/sq ft</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Paint, minor cosmetics</div>
+                        </div>
+                        <div class="quick-select-btn" onclick="selectRehabCost(35)">
+                            <div class="scope-name">Light Cosmetic</div>
+                            <div class="scope-cost">$35/sq ft</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Paint, LVP, fixtures</div>
+                        </div>
+                        <div class="quick-select-btn" onclick="selectRehabCost(45)">
+                            <div class="scope-name">Heavy Cosmetic</div>
+                            <div class="scope-cost">$45/sq ft</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Kitchen, LVP, fixtures, baths</div>
+                        </div>
+                        <div class="quick-select-btn" onclick="selectRehabCost(60)">
+                            <div class="scope-name">Moderate</div>
+                            <div class="scope-cost">$60/sq ft</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Kitchen, baths, systems</div>
+                        </div>
+                        <div class="quick-select-btn" onclick="selectRehabCost(75)">
+                            <div class="scope-name">Full Gut</div>
+                            <div class="scope-cost">$75/sq ft</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Complete renovation</div>
+                        </div>
+                        <div class="quick-select-btn" onclick="selectRehabCost(90)">
+                            <div class="scope-name">Structural</div>
+                            <div class="scope-cost">$90/sq ft</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Major structural work</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Detailed Cost Benchmarks</h3>
+                    <table class="rehab-table">
+                        <thead>
+                            <tr>
+                                <th>Scope</th>
+                                <th>Cost Range (per sq ft)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>Light Cosmetic</strong><br>
+                                    <span style="font-size: 12px; color: #6b7280;">Paint, LVP, fixtures, minor kitchen</span>
+                                </td>
+                                <td><strong>$20 – $35</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Moderate Renovation</strong><br>
+                                    <span style="font-size: 12px; color: #6b7280;">Kitchen, baths, systems updates</span>
+                                </td>
+                                <td><strong>$35 – $60</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Heavy Renovation</strong><br>
+                                    <span style="font-size: 12px; color: #6b7280;">Near gut, major structural work</span>
+                                </td>
+                                <td><strong>$60 – $90</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Full Retail Remodel</strong><br>
+                                    <span style="font-size: 12px; color: #6b7280;">Non-investor scope, high-end finishes</span>
+                                </td>
+                                <td><strong>$80 – $120+</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="confirm-modal">
+        <div class="confirm-box">
+            <h3>⚠️ Delete All History?</h3>
+            <p>This will permanently delete all saved deals. This action cannot be undone.</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-yes" onclick="confirmClearHistory()">Delete All</button>
+                <button class="confirm-btn confirm-no" onclick="closeConfirm()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="saveSettings()" style="background: #10b981; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">💾 Save</button>
+                    <button class="close-btn" onclick="closeSettings()">Close</button>
+                </div>
+            </div>
+            
+            <div style="padding: 20px 0;">
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #374151; font-size: 16px; margin-bottom: 16px; font-weight: 700;">🏷️ App Name</h3>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 14px; color: #6b7280; margin-bottom: 6px;">
+                            Calculator Name
+                        </label>
+                        <input type="text" id="settingsAppName" value="Epic Flip Calculator" maxlength="30" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="font-size: 13px; color: #6b7280;">
+                        This will appear in the browser tab and when installed on your device
+                    </div>
+                </div>
+
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #374151; font-size: 16px; margin-bottom: 16px; font-weight: 700;">💵 Monthly Insurance Cost</h3>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 14px; color: #6b7280; margin-bottom: 6px;">
+                            Insurance cost per month ($)
+                        </label>
+                        <input type="number" id="settingsInsuranceCost" value="250" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="font-size: 13px; color: #6b7280;">
+                        Default: $250/month
+                    </div>
+                </div>
+
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #374151; font-size: 16px; margin-bottom: 16px; font-weight: 700;">🏛️ Property Tax Rate</h3>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 14px; color: #6b7280; margin-bottom: 6px;">
+                            Annual property tax rate (% of ARV)
+                        </label>
+                        <input type="number" id="settingsPropertyTaxRate" value="1.5" step="0.1" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="font-size: 13px; color: #6b7280;">
+                        Default: 1.5% annually (varies by location)
+                    </div>
+                </div>
+
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #374151; font-size: 16px; margin-bottom: 16px; font-weight: 700;">💼 Closing Costs (% of ARV)</h3>
+                    <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px; background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                        <strong>Quick Presets:</strong> Standard (~7.5%) | Conservative (~8.5%) | Worst-case (~10%)
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px; font-weight: 600;">
+                            Commission: <span id="commissionValue" style="color: #3b82f6;">5.5%</span>
+                        </label>
+                        <input type="range" id="settingsCommission" min="0" max="10" step="0.1" value="5.5" oninput="document.getElementById('commissionValue').textContent = this.value + '%'; updateClosingCostsPreview();" style="width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; cursor: pointer;">
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Realtor/agent fees</div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px; font-weight: 600;">
+                            Title/Escrow/Doc Stamps: <span id="titleValue" style="color: #3b82f6;">1.0%</span>
+                        </label>
+                        <input type="range" id="settingsTitleEscrow" min="0" max="3" step="0.1" value="1.0" oninput="document.getElementById('titleValue').textContent = this.value + '%'; updateClosingCostsPreview();" style="width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; cursor: pointer;">
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Title insurance, escrow, recording</div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px; font-weight: 600;">
+                            Taxes/Prorations: <span id="taxesProValue" style="color: #3b82f6;">0.3%</span>
+                        </label>
+                        <input type="range" id="settingsTaxesProrations" min="0" max="2" step="0.1" value="0.3" oninput="document.getElementById('taxesProValue').textContent = this.value + '%'; updateClosingCostsPreview();" style="width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; cursor: pointer;">
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Property tax prorations at closing</div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px; font-weight: 600;">
+                            Credits/Warranty/Misc: <span id="creditsValue" style="color: #3b82f6;">0.7%</span>
+                        </label>
+                        <input type="range" id="settingsCreditsWarranty" min="0" max="3" step="0.1" value="0.7" oninput="document.getElementById('creditsValue').textContent = this.value + '%'; updateClosingCostsPreview();" style="width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; cursor: pointer;">
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Buyer credits, home warranty, misc fees</div>
+                    </div>
+
+                    <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 700; color: #374151;">Total Closing Costs:</span>
+                            <span id="totalClosingCostsPreview" style="font-size: 18px; font-weight: 800; color: #3b82f6;">7.5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+                    <h3 style="color: #374151; font-size: 16px; margin-bottom: 16px; font-weight: 700;">🏗️ Rehab Cost Quick Select Options</h3>
+                    
+                    <div id="rehabSettingsList">
+                        <!-- Dynamically populated -->
+                    </div>
+                    
+                    <button onclick="saveSettings()" style="width: 100%; margin-top: 20px; padding: 14px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        💾 Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+
+        // Default settings
+        const defaultSettings = {
+            appName: 'Epic Flip Calculator',
+            insuranceCost: 250,
+            propertyTaxRate: 1.5, // Annual property tax rate as percentage of ARV
+            closingCosts: {
+                commission: 5.5,
+                titleEscrow: 1.0,
+                taxesProrations: 0.3,
+                creditsWarrantyMisc: 0.7
+            },
+            rehabOptions: [
+                { name: 'Basic Cosmetic', cost: 25, description: 'Paint, minor cosmetics' },
+                { name: 'Light Cosmetic', cost: 35, description: 'Paint, LVP, fixtures' },
+                { name: 'Heavy Cosmetic', cost: 45, description: 'Kitchen, LVP, fixtures, baths' },
+                { name: 'Moderate', cost: 60, description: 'Kitchen, baths, systems' },
+                { name: 'Full Gut', cost: 75, description: 'Complete renovation' },
+                { name: 'Structural', cost: 90, description: 'Major structural work' }
+            ]
+        };
+
+        // Load settings from localStorage or use defaults
+        function loadSettings() {
+            const saved = localStorage.getItem('calculatorSettings');
+            const loadedSettings = saved ? JSON.parse(saved) : defaultSettings;
+            
+            // Ensure appName exists (for backward compatibility)
+            if (!loadedSettings.appName) {
+                loadedSettings.appName = defaultSettings.appName;
+            }
+            
+            return loadedSettings;
+        }
+
+        let settings = loadSettings();
+
+        // PWA Install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').style.display = 'flex';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').style.display = 'none';
+                });
+            }
+        }
+
+        function formatCurrency(value) {
+            return '$' + Math.round(value).toLocaleString();
+        }
+
+        function calculate() {
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const sqft = parseFloat(document.getElementById('sqft').value) || 0;
+            const arv = parseFloat(document.getElementById('arv').value) || 0;
+            const rehabPerSqFt = parseFloat(document.getElementById('rehabPerSqFt').value) || 0;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const baseHoldTime = parseFloat(document.getElementById('holdTime').value) || 0;
+            const closingCosts = parseFloat(document.getElementById('closingCosts').value) || 0;
+            
+            // Apocalypse mode
+            const apocalypseMode = document.getElementById('apocalypseToggle').checked;
+            const holdTime = apocalypseMode ? baseHoldTime * 2 : baseHoldTime;
+            
+            // Contingency buffer (always enabled)
+            const contingencyPercent = parseFloat(document.getElementById('contingencyPercent').value) || 0;
+
+            // Base calculations
+            const baseRehabCost = sqft * rehabPerSqFt;
+            const contingencyAmount = baseRehabCost * (contingencyPercent / 100);
+            let rehabCost = baseRehabCost + contingencyAmount;
+            
+            // Apply apocalypse mode to rehab cost
+            if (apocalypseMode) {
+                rehabCost = rehabCost * 1.15; // +15% for apocalypse
+            }
+            
+            // Show/hide contingency breakdown
+            if (contingencyPercent > 0) {
+                document.getElementById('baseRehabRow').style.display = 'flex';
+                document.getElementById('contingencyRow').style.display = 'flex';
+                document.getElementById('baseRehabCost').textContent = formatCurrency(baseRehabCost);
+                document.getElementById('contingencyAmount').textContent = formatCurrency(contingencyAmount);
+                document.getElementById('contingencyDisplay').textContent = contingencyPercent;
+            } else {
+                document.getElementById('baseRehabRow').style.display = 'none';
+                document.getElementById('contingencyRow').style.display = 'none';
+            }
+            
+            const insurance = holdTime * settings.insuranceCost;
+            
+            // Property tax during holding period
+            const annualPropertyTax = arv * (settings.propertyTaxRate / 100);
+            const monthlyPropertyTax = annualPropertyTax / 12;
+            const propertyTax = monthlyPropertyTax * holdTime;
+            
+            const monthlyInterest = (purchasePrice + rehabCost) * (interestRate / 100) / 12;
+            const totalInterest = monthlyInterest * holdTime;
+            const holdingCosts = totalInterest + insurance + propertyTax + closingCosts;
+            const totalInvestment = purchasePrice + rehabCost + holdingCosts + closingCosts;
+            const saleProceeds = arv * 0.94;
+            
+            // Calculate closing costs breakdown
+            const commission = arv * (settings.closingCosts.commission / 100);
+            const titleEscrow = arv * (settings.closingCosts.titleEscrow / 100);
+            const taxesProrations = arv * (settings.closingCosts.taxesProrations / 100);
+            const creditsWarranty = arv * (settings.closingCosts.creditsWarrantyMisc / 100);
+            const totalClosingCostsAmount = commission + titleEscrow + taxesProrations + creditsWarranty;
+            const totalClosingPercent = settings.closingCosts.commission + settings.closingCosts.titleEscrow + 
+                                       settings.closingCosts.taxesProrations + settings.closingCosts.creditsWarrantyMisc;
+            
+            // Net proceeds after closing costs
+            const netProceeds = arv - totalClosingCostsAmount;
+            const profit = netProceeds - totalInvestment;
+            const maxOffer65 = arv * 0.65 - rehabCost;
+            const maxOffer70 = arv * 0.70 - rehabCost;
+
+            // Update display
+            document.getElementById('rehabCost').textContent = formatCurrency(rehabCost);
+            document.getElementById('insurance').textContent = formatCurrency(insurance);
+            document.getElementById('propertyTax').textContent = formatCurrency(propertyTax);
+            document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+            document.getElementById('holdingCosts').textContent = formatCurrency(holdingCosts);
+            document.getElementById('totalInvestment').textContent = formatCurrency(totalInvestment);
+            
+            // Update closing costs breakdown
+            document.getElementById('commissionPercent').textContent = settings.closingCosts.commission.toFixed(1);
+            document.getElementById('commissionAmount').textContent = formatCurrency(commission);
+            document.getElementById('titlePercent').textContent = settings.closingCosts.titleEscrow.toFixed(1);
+            document.getElementById('titleAmount').textContent = formatCurrency(titleEscrow);
+            document.getElementById('taxesProPercent').textContent = settings.closingCosts.taxesProrations.toFixed(1);
+            document.getElementById('taxesProAmount').textContent = formatCurrency(taxesProrations);
+            document.getElementById('creditsPercent').textContent = settings.closingCosts.creditsWarrantyMisc.toFixed(1);
+            document.getElementById('creditsAmount').textContent = formatCurrency(creditsWarranty);
+            document.getElementById('totalClosingCosts').textContent = formatCurrency(totalClosingCostsAmount);
+            document.getElementById('totalClosingPercent').textContent = totalClosingPercent.toFixed(1);
+            
+            document.getElementById('netProceeds').textContent = formatCurrency(netProceeds);
+            document.getElementById('profit').textContent = formatCurrency(profit);
+            document.getElementById('maxOffer65').textContent = formatCurrency(maxOffer65);
+            document.getElementById('maxOffer70').textContent = formatCurrency(maxOffer70);
+
+            // Show/hide apocalypse warning
+            document.getElementById('apocalypseWarning').style.display = apocalypseMode ? 'block' : 'none';
+
+            // Check if BRRRR mode
+            const isBRRRR = document.getElementById('brrrToggle').checked;
+
+            if (isBRRRR) {
+                // BRRRR Calculations
+                const monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
+                const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+                const vacancyRate = parseFloat(document.getElementById('vacancyRate').value) || 0;
+                const refinanceLTV = parseFloat(document.getElementById('refinanceLTV').value) || 75;
+                const refinanceRate = parseFloat(document.getElementById('refinanceRate').value) || 7;
+                const refinanceTerm = parseFloat(document.getElementById('refinanceTerm').value) || 30;
+                const refinanceCosts = parseFloat(document.getElementById('refinanceCosts').value) || 0;
+
+                // Refinance loan amount
+                const refinanceLoanAmount = arv * (refinanceLTV / 100);
+                
+                // Cash recovered from refinance
+                const cashRecovered = refinanceLoanAmount - totalInvestment - refinanceCosts;
+                const cashLeftIn = Math.max(0, totalInvestment + refinanceCosts - refinanceLoanAmount);
+                
+                // Monthly mortgage payment (P&I)
+                const monthlyRate = (refinanceRate / 100) / 12;
+                const numPayments = refinanceTerm * 12;
+                const monthlyMortgage = refinanceLoanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+                
+                // Monthly cash flow
+                const effectiveMonthlyRent = monthlyRent * (1 - vacancyRate / 100);
+                const monthlyCashFlow = effectiveMonthlyRent - monthlyMortgage - monthlyExpenses;
+                const annualCashFlow = monthlyCashFlow * 12;
+                
+                // Cash-on-Cash return
+                const cocReturn = cashLeftIn > 0 ? (annualCashFlow / cashLeftIn) * 100 : 0;
+                
+                // DSCR (Debt Service Coverage Ratio)
+                const dscr = monthlyMortgage > 0 ? effectiveMonthlyRent / monthlyMortgage : 0;
+                
+                // Update BRRRR results
+                document.getElementById('refinanceLoanAmount').textContent = formatCurrency(refinanceLoanAmount);
+                document.getElementById('monthlyCashFlow').textContent = formatCurrency(monthlyCashFlow);
+                document.getElementById('cashRecovered').textContent = formatCurrency(cashRecovered);
+                document.getElementById('cashLeftIn').textContent = formatCurrency(cashLeftIn);
+                document.getElementById('cocReturn').textContent = cocReturn.toFixed(1) + '%';
+                document.getElementById('dscr').textContent = dscr.toFixed(2);
+                document.getElementById('annualCashFlowInline').textContent = formatCurrency(annualCashFlow);
+                
+                // Color code monthly cash flow
+                const cashFlowElement = document.getElementById('monthlyCashFlow');
+                if (monthlyCashFlow > 0) {
+                    cashFlowElement.parentElement.style.background = '#7c3aed';
+                } else {
+                    cashFlowElement.parentElement.style.background = '#ef4444';
+                }
+            } else {
+                // FLIP mode - Update deal score (which also sets profit box color)
+                updateDealScore(profit);
+            }
+        }
+
+        function updateDealScore(profit) {
+            const profitBox = document.querySelector('.profit');
+            const scoreText = document.getElementById('dealScoreText');
+            const emoji = document.getElementById('dealScoreEmoji');
+
+            if (profit >= 30000) {
+                profitBox.style.background = '#10b981';
+                emoji.textContent = '🔥';
+                scoreText.textContent = 'Great Deal!';
+            } else if (profit >= 15000) {
+                profitBox.style.background = '#10b981';
+                emoji.textContent = '👍';
+                scoreText.textContent = 'Good Deal';
+            } else if (profit > 0) {
+                profitBox.style.background = '#f59e0b';
+                emoji.textContent = '✅';
+                scoreText.textContent = 'Marginal Deal';
+            } else {
+                profitBox.style.background = '#ef4444';
+                emoji.textContent = '❌';
+                scoreText.textContent = 'Pass on This';
+            }
+        }
+
+        function fillPurchasePrice(rule) {
+            const maxOffer = parseFloat(document.getElementById(`maxOffer${rule}`).textContent.replace(/[$,]/g, ''));
+            if (maxOffer > 0) {
+                document.getElementById('purchasePrice').value = Math.round(maxOffer);
+                calculate();
+                // Scroll to top smoothly so user sees the change
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function toggleStrategy() {
+            const isBRRRR = document.getElementById('brrrToggle').checked;
+            
+            // Update label and description
+            document.getElementById('strategyLabel').textContent = isBRRRR ? '🏦 BRRRR' : '💰 FLIP';
+            document.getElementById('strategyDescription').textContent = isBRRRR ? 'Rent, refinance, repeat' : 'Sell for profit';
+            
+            // Change the toggle box color
+            const toggleBox = document.getElementById('strategyToggleBox');
+            if (isBRRRR) {
+                toggleBox.style.background = 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)';
+                toggleBox.style.borderColor = '#7c3aed';
+            } else {
+                toggleBox.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                toggleBox.style.borderColor = '#10b981';
+            }
+            
+            // Show/hide BRRRR inputs
+            document.getElementById('brrrInputs').style.display = isBRRRR ? 'block' : 'none';
+            
+            // Show/hide results sections
+            document.querySelector('.profit').style.display = isBRRRR ? 'none' : 'block';
+            document.getElementById('brrrResults').style.display = isBRRRR ? 'block' : 'none';
+            
+            // Show/hide flip-specific result rows
+            document.getElementById('closingCostsBreakdown').style.display = isBRRRR ? 'none' : 'flex';
+            document.getElementById('netProceedsRow').style.display = isBRRRR ? 'none' : 'flex';
+            document.querySelector('.max-offers').style.display = isBRRRR ? 'none' : 'flex';
+            
+            // Recalculate
+            calculate();
+        }
+
+        function saveDeal() {
+            const isBRRRR = document.getElementById('brrrToggle').checked;
+            
+            const deal = {
+                date: new Date().toLocaleString(),
+                address: document.getElementById('propertyAddress').value || 'No Address',
+                mlsNumber: document.getElementById('mlsNumber').value || '',
+                notes: document.getElementById('dealNotes').value || '',
+                strategy: isBRRRR ? 'BRRRR' : 'FLIP',
+                purchasePrice: parseFloat(document.getElementById('purchasePrice').value),
+                sqft: parseFloat(document.getElementById('sqft').value),
+                arv: parseFloat(document.getElementById('arv').value),
+                rehabPerSqFt: parseFloat(document.getElementById('rehabPerSqFt').value),
+                interestRate: parseFloat(document.getElementById('interestRate').value),
+                holdTime: parseFloat(document.getElementById('holdTime').value),
+                closingCosts: parseFloat(document.getElementById('closingCosts').value),
+                contingencyPercent: parseFloat(document.getElementById('contingencyPercent').value) || 0,
+                apocalypseMode: document.getElementById('apocalypseToggle').checked,
+                baseRehabCost: parseFloat(document.getElementById('contingencyPercent').value) > 0 ? parseFloat(document.getElementById('baseRehabCost').textContent.replace(/[$,]/g, '')) : 0,
+                contingencyAmount: parseFloat(document.getElementById('contingencyPercent').value) > 0 ? parseFloat(document.getElementById('contingencyAmount').textContent.replace(/[$,]/g, '')) : 0,
+                rehabCost: parseFloat(document.getElementById('rehabCost').textContent.replace(/[$,]/g, '')),
+                insurance: parseFloat(document.getElementById('insurance').textContent.replace(/[$,]/g, '')),
+                totalInterest: parseFloat(document.getElementById('totalInterest').textContent.replace(/[$,]/g, '')),
+                holdingCosts: parseFloat(document.getElementById('holdingCosts').textContent.replace(/[$,]/g, '')),
+                totalInvestment: parseFloat(document.getElementById('totalInvestment').textContent.replace(/[$,]/g, '')),
+                totalClosingCosts: parseFloat(document.getElementById('totalClosingCosts').textContent.replace(/[$,]/g, '')),
+                netProceeds: parseFloat(document.getElementById('netProceeds').textContent.replace(/[$,]/g, '')),
+                profit: parseFloat(document.getElementById('profit').textContent.replace(/[$,]/g, '')),
+                maxOffer65: parseFloat(document.getElementById('maxOffer65').textContent.replace(/[$,]/g, '')),
+                maxOffer70: parseFloat(document.getElementById('maxOffer70').textContent.replace(/[$,]/g, ''))
+            };
+
+            // Add BRRRR-specific data if in BRRRR mode
+            if (isBRRRR) {
+                deal.monthlyRent = parseFloat(document.getElementById('monthlyRent').value);
+                deal.monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value);
+                deal.vacancyRate = parseFloat(document.getElementById('vacancyRate').value);
+                deal.refinanceLTV = parseFloat(document.getElementById('refinanceLTV').value);
+                deal.refinanceRate = parseFloat(document.getElementById('refinanceRate').value);
+                deal.refinanceTerm = parseFloat(document.getElementById('refinanceTerm').value);
+                deal.refinanceCosts = parseFloat(document.getElementById('refinanceCosts').value);
+                deal.monthlyCashFlow = parseFloat(document.getElementById('monthlyCashFlow').textContent.replace(/[$,]/g, ''));
+                deal.cashRecovered = parseFloat(document.getElementById('cashRecovered').textContent.replace(/[$,]/g, ''));
+                deal.cashLeftIn = parseFloat(document.getElementById('cashLeftIn').textContent.replace(/[$,]/g, ''));
+                deal.cocReturn = document.getElementById('cocReturn').textContent;
+                deal.dscr = document.getElementById('dscr').textContent;
+                deal.annualCashFlow = parseFloat(document.getElementById('annualCashFlow').textContent.replace(/[$,]/g, ''));
+            }
+
+            let history = JSON.parse(localStorage.getItem('dealHistory') || '[]');
+            history.unshift(deal);
+            localStorage.setItem('dealHistory', JSON.stringify(history));
+
+            alert('✅ Deal saved successfully!');
+        }
+
+        function showHistory() {
+            const history = JSON.parse(localStorage.getItem('dealHistory') || '[]');
+            const historyList = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="no-history">No saved deals yet. Save a deal to see it here!</div>';
+            } else {
+                historyList.innerHTML = history.map((deal, index) => `
+                    <div class="history-item" onclick="loadDeal(${index})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; display: inline-block; font-size: 11px; margin-bottom: 8px;">
+                            Click to load & edit
+                        </div>
+                        <div class="history-date">${deal.date}</div>
+                        <div class="history-address">${deal.address}</div>
+                        ${deal.strategy ? `<div style="font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; ${deal.strategy === 'BRRRR' ? 'background: linear-gradient(135deg, #7c3aed, #6366f1); color: white;' : 'background: linear-gradient(135deg, #10b981, #059669); color: white;'}">${deal.strategy === 'BRRRR' ? '🏦 BRRRR' : '💰 FLIP'}</div>` : ''}
+                        ${deal.mlsNumber ? `<div style="font-size: 13px; color: #667eea; font-weight: 600; margin-bottom: 8px;">MLS #${deal.mlsNumber}</div>` : ''}
+                        ${deal.apocalypseMode ? `<div style="font-size: 11px; color: #fbbf24; background: linear-gradient(135deg, #dc2626, #991b1b); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; border: 1px solid #fbbf24;">☢️ APOCALYPSE MODE</div>` : ''}
+                        ${deal.notes ? `<div style="background: white; padding: 8px; border-radius: 4px; font-size: 13px; color: #374151; margin-bottom: 12px; border-left: 3px solid #667eea;"><strong>Notes:</strong> ${deal.notes}</div>` : ''}
+                        
+                        <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                            <div style="font-weight: 700; color: #374151; margin-bottom: 8px; font-size: 14px;">📊 Analysis Results</div>
+                            ${deal.contingencyPercent > 0 ? `
+                                <div style="font-size: 12px; color: #10b981; margin-bottom: 8px; padding: 4px 8px; background: #d1fae5; border-radius: 4px; display: inline-block;">
+                                    ✓ Contingency Buffer: ${deal.contingencyPercent}%
+                                </div>
+                            ` : ''}
+                            
+                            ${deal.strategy === 'BRRRR' ? `
+                                <div style="background: #f3f4f6; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                                    <div style="font-size: 12px; color: #7c3aed; font-weight: 700; margin-bottom: 8px;">🏦 BRRRR Metrics</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #374151;">
+                                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                            <span style="color: #6b7280;">Monthly Cash Flow:</span>
+                                            <strong style="color: ${deal.monthlyCashFlow > 0 ? '#10b981' : '#ef4444'}">${formatCurrency(deal.monthlyCashFlow)}</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                            <span style="color: #6b7280;">Cash Recovered:</span>
+                                            <strong>${formatCurrency(deal.cashRecovered)}</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                            <span style="color: #6b7280;">Cash Left In:</span>
+                                            <strong>${formatCurrency(deal.cashLeftIn)}</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                            <span style="color: #6b7280;">CoC Return:</span>
+                                            <strong>${deal.cocReturn}</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                            <span style="color: #6b7280;">DSCR:</span>
+                                            <strong>${deal.dscr}</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                            <span style="color: #6b7280;">Annual Cash Flow:</span>
+                                            <strong>${formatCurrency(deal.annualCashFlow)}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div style="margin-top: 12px; padding: 12px; background: ${deal.profit > 0 ? '#d1fae5' : '#fee2e2'}; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 12px; color: ${deal.profit > 0 ? '#065f46' : '#991b1b'}; margin-bottom: 2px;">💰 Projected Profit</div>
+                                    <div style="font-size: 20px; font-weight: 800; color: ${deal.profit > 0 ? '#10b981' : '#ef4444'};">${formatCurrency(deal.profit)}</div>
+                                </div>
+                            `}
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #374151;">
+                                ${deal.contingencyPercent > 0 && deal.baseRehabCost ? `
+                                    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                        <span style="color: #6b7280;">Base Rehab:</span>
+                                        <strong>${formatCurrency(deal.baseRehabCost)}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                        <span style="color: #6b7280;">Buffer (+${deal.contingencyPercent}%):</span>
+                                        <strong>${formatCurrency(deal.contingencyAmount)}</strong>
+                                    </div>
+                                ` : ''}
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Total Rehab:</span>
+                                    <strong>${formatCurrency(deal.rehabCost)}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Insurance:</span>
+                                    <strong>${formatCurrency(deal.insurance)}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Total Interest:</span>
+                                    <strong>${formatCurrency(deal.totalInterest)}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Holding Costs:</span>
+                                    <strong>${formatCurrency(deal.holdingCosts)}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Total Investment:</span>
+                                    <strong>${formatCurrency(deal.totalInvestment)}</strong>
+                                </div>
+                                ${deal.totalClosingCosts ? `
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Closing Costs:</span>
+                                    <strong>${formatCurrency(deal.totalClosingCosts)}</strong>
+                                </div>
+                                ` : ''}
+                                ${deal.netProceeds ? `
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Net Proceeds:</span>
+                                    <strong>${formatCurrency(deal.netProceeds)}</strong>
+                                </div>
+                                ` : deal.saleProceeds ? `
+                                <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                    <span style="color: #6b7280;">Sale Proceeds:</span>
+                                    <strong>${formatCurrency(deal.saleProceeds)}</strong>
+                                </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                                <div style="background: #eff6ff; padding: 8px; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 11px; color: #1e40af; margin-bottom: 2px;">65% Rule Max</div>
+                                    <div style="font-size: 16px; font-weight: 700; color: #3b82f6;">${formatCurrency(deal.maxOffer65)}</div>
+                                </div>
+                                <div style="background: #eff6ff; padding: 8px; border-radius: 6px; text-align: center;">
+                                    <div style="font-size: 11px; color: #1e40af; margin-bottom: 2px;">70% Rule Max</div>
+                                    <div style="font-size: 16px; font-weight: 700; color: #3b82f6;">${formatCurrency(deal.maxOffer70)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('historyModal').style.display = 'block';
+        }
+
+        function loadDeal(index) {
+            const history = JSON.parse(localStorage.getItem('dealHistory') || '[]');
+            const deal = history[index];
+            
+            if (!deal) return;
+            
+            // Set strategy mode
+            const isBRRRR = deal.strategy === 'BRRRR';
+            document.getElementById('brrrToggle').checked = isBRRRR;
+            toggleStrategy(); // This will show/hide the appropriate sections
+            
+            // Load all the values back into the form
+            document.getElementById('propertyAddress').value = deal.address || '';
+            document.getElementById('mlsNumber').value = deal.mlsNumber || '';
+            document.getElementById('purchasePrice').value = deal.purchasePrice || 0;
+            document.getElementById('sqft').value = deal.sqft || 0;
+            document.getElementById('arv').value = deal.arv || 0;
+            document.getElementById('rehabPerSqFt').value = deal.rehabPerSqFt || 0;
+            document.getElementById('interestRate').value = deal.interestRate || 12;
+            document.getElementById('holdTime').value = deal.holdTime || 0;
+            document.getElementById('closingCosts').value = deal.closingCosts || 0;
+            document.getElementById('contingencyPercent').value = deal.contingencyPercent || 15;
+            document.getElementById('apocalypseToggle').checked = deal.apocalypseMode || false;
+            document.getElementById('dealNotes').value = deal.notes || '';
+            
+            // Load BRRRR-specific fields if applicable
+            if (isBRRRR && deal.monthlyRent !== undefined) {
+                document.getElementById('monthlyRent').value = deal.monthlyRent || 0;
+                document.getElementById('monthlyExpenses').value = deal.monthlyExpenses || 0;
+                document.getElementById('vacancyRate').value = deal.vacancyRate || 8;
+                document.getElementById('refinanceLTV').value = deal.refinanceLTV || 75;
+                document.getElementById('refinanceRate').value = deal.refinanceRate || 7;
+                document.getElementById('refinanceTerm').value = deal.refinanceTerm || 30;
+                document.getElementById('refinanceCosts').value = deal.refinanceCosts || 3000;
+            }
+            
+            // Recalculate
+            calculate();
+            
+            // Close history modal and scroll to top
+            closeHistory();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        function clearHistory() {
+            const confirmed = confirm('⚠️ Are you sure you want to delete ALL saved deals? This cannot be undone.');
+            if (confirmed) {
+                try {
+                    localStorage.removeItem('dealHistory');
+                    const historyList = document.getElementById('historyList');
+                    if (historyList) {
+                        historyList.innerHTML = '<div class="no-history">All history cleared! Save a deal to start building your history again.</div>';
+                    }
+                    alert('✅ All deal history has been cleared.');
+                } catch (error) {
+                    alert('Error clearing history: ' + error.message);
+                }
+            }
+        }
+
+        function showConfirmClear() {
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        function showSettings() {
+            // Populate app name
+            document.getElementById('settingsAppName').value = settings.appName;
+            
+            // Populate insurance cost
+            document.getElementById('settingsInsuranceCost').value = settings.insuranceCost;
+            
+            // Populate property tax rate
+            document.getElementById('settingsPropertyTaxRate').value = settings.propertyTaxRate;
+            
+            // Populate closing costs
+            document.getElementById('settingsCommission').value = settings.closingCosts.commission;
+            document.getElementById('commissionValue').textContent = settings.closingCosts.commission + '%';
+            document.getElementById('settingsTitleEscrow').value = settings.closingCosts.titleEscrow;
+            document.getElementById('titleValue').textContent = settings.closingCosts.titleEscrow + '%';
+            document.getElementById('settingsTaxesProrations').value = settings.closingCosts.taxesProrations;
+            document.getElementById('taxesProValue').textContent = settings.closingCosts.taxesProrations + '%';
+            document.getElementById('settingsCreditsWarranty').value = settings.closingCosts.creditsWarrantyMisc;
+            document.getElementById('creditsValue').textContent = settings.closingCosts.creditsWarrantyMisc + '%';
+            updateClosingCostsPreview();
+            
+            // Populate rehab options
+            const rehabList = document.getElementById('rehabSettingsList');
+            rehabList.innerHTML = settings.rehabOptions.map((option, index) => `
+                <div style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 12px; border: 2px solid #e5e7eb;">
+                    <div style="display: grid; gap: 12px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 4px; font-weight: 600;">
+                                Name
+                            </label>
+                            <input type="text" id="rehabName${index}" value="${option.name}" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 4px; font-weight: 600;">
+                                Cost per Sq Ft ($)
+                            </label>
+                            <input type="number" id="rehabCost${index}" value="${option.cost}" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #6b7280; margin-bottom: 4px; font-weight: 600;">
+                                Description
+                            </label>
+                            <input type="text" id="rehabDesc${index}" value="${option.description}" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        function updateAppName(name) {
+            // Update page title
+            document.title = name;
+            
+            // Update header (with safety check)
+            const appTitle = document.getElementById('appTitle');
+            if (appTitle) {
+                appTitle.textContent = '🏠 ' + name;
+            }
+            
+            // Update manifest for PWA
+            const manifestBlob = new Blob([JSON.stringify({
+                name: name,
+                short_name: name.substring(0, 12),
+                description: "Professional real estate calculator for analyzing investment deals",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#667eea",
+                theme_color: "#1e40af",
+                orientation: "portrait",
+                icons: [{
+                    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231e40af' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='white'%3E🏠%3C/text%3E%3C/svg%3E",
+                    sizes: "512x512",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                }]
+            })], { type: 'application/json' });
+            
+            const manifestURL = URL.createObjectURL(manifestBlob);
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                manifestLink.href = manifestURL;
+            }
+        }
+
+        function updateClosingCostsPreview() {
+            const commission = parseFloat(document.getElementById('settingsCommission').value) || 0;
+            const title = parseFloat(document.getElementById('settingsTitleEscrow').value) || 0;
+            const taxes = parseFloat(document.getElementById('settingsTaxesProrations').value) || 0;
+            const credits = parseFloat(document.getElementById('settingsCreditsWarranty').value) || 0;
+            const total = commission + title + taxes + credits;
+            document.getElementById('totalClosingCostsPreview').textContent = total.toFixed(1) + '%';
+        }
+
+        function saveSettings() {
+            // Save app name
+            const newAppName = document.getElementById('settingsAppName').value || 'Epic Flip Calculator';
+            settings.appName = newAppName;
+            
+            // Update UI immediately
+            updateAppName(newAppName);
+            
+            // Save insurance cost
+            settings.insuranceCost = parseFloat(document.getElementById('settingsInsuranceCost').value) || 250;
+            
+            // Save property tax rate
+            settings.propertyTaxRate = parseFloat(document.getElementById('settingsPropertyTaxRate').value) || 1.5;
+            
+            // Save closing costs
+            settings.closingCosts.commission = parseFloat(document.getElementById('settingsCommission').value) || 5.5;
+            settings.closingCosts.titleEscrow = parseFloat(document.getElementById('settingsTitleEscrow').value) || 1.0;
+            settings.closingCosts.taxesProrations = parseFloat(document.getElementById('settingsTaxesProrations').value) || 0.3;
+            settings.closingCosts.creditsWarrantyMisc = parseFloat(document.getElementById('settingsCreditsWarranty').value) || 0.7;
+            
+            // Save rehab options
+            settings.rehabOptions = settings.rehabOptions.map((option, index) => ({
+                name: document.getElementById(`rehabName${index}`).value,
+                cost: parseFloat(document.getElementById(`rehabCost${index}`).value) || 0,
+                description: document.getElementById(`rehabDesc${index}`).value
+            }));
+            
+            // Save to localStorage
+            localStorage.setItem('calculatorSettings', JSON.stringify(settings));
+            
+            // Recalculate with new insurance cost
+            calculate();
+            
+            // Update rehab guide
+            updateRehabGuide();
+            
+            closeSettings();
+            alert('✅ Settings saved successfully!');
+        }
+
+        function confirmClearHistory() {
+            localStorage.removeItem('dealHistory');
+            document.getElementById('historyList').innerHTML = '<div class="no-history">✅ All history cleared! Save a deal to start building your history again.</div>';
+            closeConfirm();
+        }
+
+        function resetForm() {
+            // Save the current interest rate
+            const currentRate = document.getElementById('interestRate').value;
+            localStorage.setItem('savedInterestRate', currentRate);
+            
+            // Reset all fields
+            document.getElementById('propertyAddress').value = '';
+            document.getElementById('mlsNumber').value = '';
+            document.getElementById('purchasePrice').value = 0;
+            document.getElementById('sqft').value = 0;
+            document.getElementById('arv').value = 0;
+            document.getElementById('rehabPerSqFt').value = 0;
+            // Keep interest rate as is (already saved)
+            document.getElementById('holdTime').value = 0;
+            document.getElementById('closingCosts').value = 0;
+            document.getElementById('contingencyPercent').value = 15;
+            document.getElementById('apocalypseToggle').checked = false;
+            document.getElementById('brrrToggle').checked = false;
+            document.getElementById('dealNotes').value = '';
+            
+            // Reset BRRRR fields
+            document.getElementById('monthlyRent').value = 0;
+            document.getElementById('monthlyExpenses').value = 0;
+            document.getElementById('vacancyRate').value = 8;
+            document.getElementById('refinanceLTV').value = 75;
+            document.getElementById('refinanceRate').value = 7;
+            document.getElementById('refinanceTerm').value = 30;
+            document.getElementById('refinanceCosts').value = 3000;
+            
+            // Reset to FLIP mode
+            toggleStrategy();
+            
+            // Recalculate to update display
+            calculate();
+        }
+
+        function showRehabGuide() {
+            updateRehabGuide();
+            document.getElementById('rehabGuideModal').style.display = 'block';
+        }
+
+        function updateRehabGuide() {
+            const quickSelectDiv = document.querySelector('#rehabGuideModal .quick-select');
+            if (quickSelectDiv) {
+                quickSelectDiv.innerHTML = settings.rehabOptions.map(option => `
+                    <div class="quick-select-btn" onclick="selectRehabCost(${option.cost})">
+                        <div class="scope-name">${option.name}</div>
+                        <div class="scope-cost">$${option.cost}/sq ft</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">${option.description}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function closeRehabGuide() {
+            document.getElementById('rehabGuideModal').style.display = 'none';
+        }
+
+        function selectRehabCost(cost) {
+            document.getElementById('rehabPerSqFt').value = cost;
+            calculate();
+            closeRehabGuide();
+        }
+
+        async function exportAsImage() {
+            // Import html2canvas
+            if (!window.html2canvas) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                document.head.appendChild(script);
+                await new Promise(resolve => script.onload = resolve);
+            }
+
+            const address = document.getElementById('propertyAddress').value || 'Property Analysis';
+            
+            // Capture the entire calculator
+            const element = document.querySelector('.container');
+            const canvas = await html2canvas(element, {
+                backgroundColor: null,
+                scale: 2
+            });
+            
+            // Download as image
+            const link = document.createElement('a');
+            link.download = `${address.replace(/[^a-z0-9]/gi, '_')}_analysis.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        async function exportAsPDF() {
+            // Import libraries
+            if (!window.html2canvas) {
+                const script1 = document.createElement('script');
+                script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                document.head.appendChild(script1);
+                await new Promise(resolve => script1.onload = resolve);
+            }
+            
+            if (!window.jspdf) {
+                const script2 = document.createElement('script');
+                script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                document.head.appendChild(script2);
+                await new Promise(resolve => script2.onload = resolve);
+            }
+
+            const address = document.getElementById('propertyAddress').value || 'Property Analysis';
+            
+            // Capture the calculator
+            const element = document.querySelector('.container');
+            const canvas = await html2canvas(element, {
+                backgroundColor: null,
+                scale: 2
+            });
+            
+            // Convert to PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 210; // A4 width in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            pdf.save(`${address.replace(/[^a-z0-9]/gi, '_')}_analysis.pdf`);
+        }
+
+        // Initial calculation
+        calculate();
+        
+        // Initialize rehab guide with settings
+        updateRehabGuide();
+
+        // Check if this is the first time visiting (or after browser refresh)
+        const hasVisited = sessionStorage.getItem('hasVisitedThisSession');
+        
+        if (!hasVisited) {
+            // First visit - reset the form
+            sessionStorage.setItem('hasVisitedThisSession', 'true');
+            resetForm();
+        }
+        
+        // Update app name from settings (after DOM is ready)
+        setTimeout(() => {
+            updateAppName(settings.appName);
+        }, 100);
+
+        // Restore saved interest rate if available
+        const savedRate = localStorage.getItem('savedInterestRate');
+        if (savedRate) {
+            document.getElementById('interestRate').value = savedRate;
+            calculate();
+        }
+
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {
+                // Service worker registration failed, but app still works
+            });
+        }
+    </script>
+</body>
+</html>
