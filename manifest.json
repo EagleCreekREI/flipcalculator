@@ -1,7 +1,7 @@
 {
   "name": "Epic Flip Calculator",
   "short_name": "Flip Calc",
-  "description": "Professional real estate flip calculator for analyzing investment deals",
+  "description": "Professional real estate calculator for analyzing investment deals",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#667eea",
