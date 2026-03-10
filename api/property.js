@@ -22,7 +22,26 @@ export default async function handler(req, res) {
 
     if (endpoint === 'property') {
       // Get property details by address
-      url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/address?address1=${encodeURIComponent(address)}`;
+      // Split address into address1 (street) and address2 (city, state, zip)
+      // Example: "123 Main St, Tulsa, OK 74135" -> address1="123 Main St" address2="Tulsa, OK 74135"
+      const addressParts = address.split(',').map(p => p.trim());
+      
+      let address1, address2;
+      if (addressParts.length >= 3) {
+        // Format: "123 Main St, Tulsa, OK 74135"
+        address1 = addressParts[0]; // "123 Main St"
+        address2 = addressParts.slice(1).join(', '); // "Tulsa, OK 74135"
+      } else if (addressParts.length === 2) {
+        // Format: "123 Main St, Tulsa OK"
+        address1 = addressParts[0];
+        address2 = addressParts[1];
+      } else {
+        return res.status(400).json({ 
+          error: 'Invalid address format. Please use: "123 Main St, City, State ZIP"' 
+        });
+      }
+      
+      url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/address?address1=${encodeURIComponent(address1)}&address2=${encodeURIComponent(address2)}`;
     } else if (endpoint === 'comps') {
       // Get comparable sales
       url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/sale/snapshot?latitude=${latitude}&longitude=${longitude}&radius=${radius || 0.5}&minsaleamt=1000&minsaledate=2022-01-01`;
