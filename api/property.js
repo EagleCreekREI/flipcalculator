@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
     if (endpoint === 'property') {
       const parsed = parseAddress(address);
-      if (!parsed) return res.status(400).json({ error: 'Invalid address format. Use: 123 Main St, City, State ZIP' });
+      if (!parsed) return res.status(400).json({ error: 'Invalid address format.' });
       url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?address1=${encodeURIComponent(parsed.address1)}&address2=${encodeURIComponent(parsed.address2)}`;
 
     } else if (endpoint === 'comps') {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/attomavm/detail?address1=${encodeURIComponent(parsed.address1)}&address2=${encodeURIComponent(parsed.address2)}`;
 
     } else {
-      return res.status(400).json({ error: 'Invalid endpoint. Use: property, comps, or avm' });
+      return res.status(400).json({ error: 'Invalid endpoint.' });
     }
 
     console.log('Fetching:', url);
