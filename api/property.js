@@ -62,7 +62,7 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Attom API Error:', response.status, errorText);
-      return res.status(response.status).json({ error: 'API request failed', status: response.status, message: errorText });
+      return res.status(response.status).json({ error: 'API request failed', status: response.status, message: errorText, requestedUrl: url });
     }
 
     const data = await response.json();
