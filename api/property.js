@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   const ATTOM_API_KEY = '8e022b49b60512a2f7ba0e269ca89a6d';
-  const { endpoint, address, latitude, longitude, radius, minsaleamt, minsaledate } = req.query;
+  const { endpoint, address, latitude, longitude, radius, minsaleamt } = req.query;
 
   function parseAddress(addr) {
     const parts = addr.split(',').map(p => p.trim());
@@ -29,17 +29,15 @@ export default async function handler(req, res) {
     let url;
 
     if (endpoint === 'property') {
-      // Use /property/detail to get full building data, beds, baths, sqft, etc.
       const parsed = parseAddress(address);
       if (!parsed) return res.status(400).json({ error: 'Invalid address format. Use: 123 Main St, City, State ZIP' });
       url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?address1=${encodeURIComponent(parsed.address1)}&address2=${encodeURIComponent(parsed.address2)}`;
 
     } else if (endpoint === 'comps') {
-      // Pass through client params for radius and date filtering
       const rad = radius || '0.5';
       const saleAmt = minsaleamt || '1000';
-      const saleDate = minsaledate || '2022-01-01';
-      url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/sale/snapshot?latitude=${latitude}&longitude=${longitude}&radius=${rad}&minsaleamt=${saleAmt}&minsaledate=${saleDate}`;
+      // Date filtering is done client-side — ATTOM rejects minsaledate param
+      url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/sale/snapshot?latitude=${latitude}&longitude=${longitude}&radius=${rad}&minsaleamt=${saleAmt}`;
 
     } else if (endpoint === 'avm') {
       const parsed = parseAddress(address);
@@ -73,3 +71,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 }
+  
