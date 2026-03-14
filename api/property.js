@@ -1,4 +1,6 @@
 // Vercel Serverless Function - Property Data API Proxy
+// This bypasses CORS restrictions by calling Attom Data API from the server side
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,11 +29,13 @@ export default async function handler(req, res) {
     let url;
 
     if (endpoint === 'property') {
+      // Use /property/detail to get full building data, beds, baths, sqft, etc.
       const parsed = parseAddress(address);
-      if (!parsed) return res.status(400).json({ error: 'Invalid address format.' });
+      if (!parsed) return res.status(400).json({ error: 'Invalid address format. Use: 123 Main St, City, State ZIP' });
       url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?address1=${encodeURIComponent(parsed.address1)}&address2=${encodeURIComponent(parsed.address2)}`;
 
     } else if (endpoint === 'comps') {
+      // Pass through client params for radius and date filtering
       const rad = radius || '0.5';
       const saleAmt = minsaleamt || '1000';
       const saleDate = minsaledate || '2022-01-01';
@@ -43,7 +47,7 @@ export default async function handler(req, res) {
       url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/attomavm/detail?address1=${encodeURIComponent(parsed.address1)}&address2=${encodeURIComponent(parsed.address2)}`;
 
     } else {
-      return res.status(400).json({ error: 'Invalid endpoint.' });
+      return res.status(400).json({ error: 'Invalid endpoint. Use: property, comps, or avm' });
     }
 
     console.log('Fetching:', url);
